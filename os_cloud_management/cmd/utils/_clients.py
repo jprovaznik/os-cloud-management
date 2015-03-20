@@ -50,5 +50,6 @@ def get_neutron_client():
 def get_glance_client():
     return clients.get_glance_client(*_get_client_args())
 
+
 def get_heat_client():
     return clients.get_heat_client(*_get_client_args())

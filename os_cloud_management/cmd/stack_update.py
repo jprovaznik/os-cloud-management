@@ -1,12 +1,10 @@
 import argparse
-import json
 import logging
-import os
 import textwrap
 
-from os_cloud_management import updates
 from os_cloud_management.cmd.utils import _clients as clients
 from os_cloud_management.cmd.utils import environment
+from os_cloud_management import updates
 
 
 def parse_args():
@@ -50,7 +48,7 @@ def main():
         if args.interactive:
             update.do_interactive_update()
         else:
-            print "status: {0} ({1})".format(update.get_status())
+            print("status: {0} ({1})".format(update.get_status()))
     except Exception:
         logging.exception("Unexpected error during command execution")
         return 1
