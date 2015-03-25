@@ -26,8 +26,8 @@ class UpdateManager:
         self.stack_id = stack_id
 
     def start(self, orig_stack_id, template_name, update_name=None):
-        orig_stack = self.client.stacks.get(orig_stack_id)
         if not update_name:
+            orig_stack = self.client.stacks.get(orig_stack_id)
             update_name = '{name}_update'.format(name=orig_stack.stack_name)
         servers = {}
         for x in self.client.resources.list(orig_stack_id, 2):
