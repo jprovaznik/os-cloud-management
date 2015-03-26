@@ -63,3 +63,28 @@ class UpdateManagerTest(base.TestCase):
         client.stacks.get.assert_called_once_with('123')
         client.resources.list.assert_called_once_with('123', 2)
         client.stacks.create.assert_called_once_with(**params)
+
+    def test_get_status(self):
+        client = mock.MagicMock()
+        client.stacks.get.return_value = mock.MagicMock(
+            status='IN_PROGRESS',
+            stack_name='stack')
+        events = [
+            mock.MagicMock(
+                event_time='2015-03-25T09:15:04Z',
+                resource_name='Controller-0',
+                resource_status='CREATE_IN_PROGRESS',
+                resource_status_reason='Paused until the hook is cleared'),
+            mock.MagicMock(
+                event_time='2015-03-25T09:15:05Z',
+                resource_name='Controller-1',
+                resource_status='CREATE_COMPLETE',
+                resource_status_reason=''),
+        ]
+        client.resources.get.return_value = mock.MagicMock(
+            physical_resource_id='resource')
+        client.events.list.return_value = events
+        status, resources = updates.UpdateManager(client, '123').get_status()
+        client.stacks.get.assert_called_once_with('123')
+        client.events.list.assert_called_once_with('resource')
+        self.assertEqual('WAITING', status)
