@@ -18,6 +18,7 @@ import logging
 from heatclient import client as heatclient
 from keystoneclient.auth.identity import v2
 from keystoneclient import session
+from tuskarclient import client as tuskarclient
 
 LOG = logging.getLogger(__name__)
 
@@ -43,3 +44,14 @@ def get_heat_client(username, password, tenant_name, auth_url, cacert=None,
               'ca_cert': cacert}
 
     return heatclient.Client('1', endpoint, **kwargs)
+
+
+def get_tuskar_client(username, password, tenant_name, auth_url, cacert=None):
+    LOG.debug('Creating tuskar client.')
+    kwargs = {'os_username': username,
+              'os_password': password,
+              'os_auth_url': auth_url,
+              'os_tenant_name': tenant_name,
+              'ca_file': cacert}
+
+    return tuskarclient.get_client(2, **kwargs)

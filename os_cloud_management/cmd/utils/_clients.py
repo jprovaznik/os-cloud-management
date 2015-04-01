@@ -28,3 +28,6 @@ def _get_client_args():
 
 def get_heat_client():
     return clients.get_heat_client(*_get_client_args())
+
+def get_tuskar_client():
+    return clients.get_tuskar_client(*_get_client_args())
