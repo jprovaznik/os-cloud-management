@@ -38,13 +38,23 @@ class ScaleManager:
         templates = self.tuskarclient.plans.templates(self.plan_id)
         master = templates.get('plan.yaml')
         env = templates.get('environment.yaml')
-        del templates['plan.yaml']
-        del templates['environment.yaml']
+
+        files = {}
+        for name in templates:
+            if name != 'plan.yaml' and name != 'environment.yaml':
+                # there is an issue with file path - in templates we use
+                # relative paths so get_file xxx doesn't include 'puppet/'
+                # subdir, as a workaround 'puppet/' is removed from file names
+                if name.startswith('puppet/manifests'):
+                    files[name[7:]] = templates[name]
+                    #print "{0} -> {1}".format(name, name[7:])
+                else:
+                    files[name] = templates[name]
 
         # TODO: add breakpoints
         params = {
             'template': master,
             'environment': env,
-            'files': templates,
+            'files': files,
         }
         stack = self.heatclient.stacks.update(self.stack_id, **params)
