@@ -17,6 +17,8 @@ import json
 import logging
 import time
 
+from tuskarclient.common import utils as tuskarutils
+
 LOG = logging.getLogger(__name__)
 
 
@@ -25,17 +27,14 @@ class ScaleManager:
         self.tuskarclient = tuskarclient
         self.heatclient = heatclient
         self.stack_id = stack_id
-        self.plan_id = plan_id
+        self.plan = tuskarutils.find_resource(self.tuskarclient.plans, plan_id)
 
     def scaleup(self, role, num):
-        # TODO(jprovazn): update plan in tuskar
-        #plan = tuskarutils.find_resource(self.tuskarclient.plans, 'overcloud')
-        #plan = self.tuskarclient.plans.get(plan_uuid=self.plan_id)
         param_name = "{0}::count".format(role)
-        plan = self.tuskarclient.plans.patch(
-            self.plan_id, [{'name': '{0}::count'.format(role),
-                            'value': num}])
-        templates = self.tuskarclient.plans.templates(self.plan_id)
+        self.plan = self.tuskarclient.plans.patch(
+            self.plan.uuid, [{'name': '{0}::count'.format(role),
+                              'value': num}])
+        templates = self.tuskarclient.plans.templates(self.plan.uuid)
         master = templates.get('plan.yaml')
         env = templates.get('environment.yaml')
 
